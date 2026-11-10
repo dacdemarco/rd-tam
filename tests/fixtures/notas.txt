@@ -1,0 +1,5 @@
+El bosque aparece tres veces en la entrevista. La comunidad también habla del río azul y de la memoria que comparten sus habitantes.
+
+La búsqueda de «río azul» debe reconocer RÍO AZUL y rio azul. Los resultados de este archivo utilizan posiciones de palabras porque el texto no contiene marcas de tiempo.
+
+Bosque y bosques son palabras diferentes. La concordancia debe conservar las palabras que rodean cada aparición de bosque.

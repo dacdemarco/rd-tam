@@ -1,0 +1,19 @@
+# Entornos y dependencias
+.venv/
+node_modules/
+.npm-cache/
+__pycache__/
+.pytest_cache/
+# Salidas regenerables
+/build/
+/dist/
+/public/
+/release/
+/artifacts/
+# Datos locales: nunca al repositorio
+/data/
+/qa/
+*.log
+.env
+# Referencias visuales de terceros: solo para consulta
+/refes/

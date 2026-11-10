@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analysis browser QA</title>
+<link rel="stylesheet" href="../web/styles.css">
+<link rel="stylesheet" href="../web/analysis.css">
+<style>#qa-status{position:fixed;z-index:999;bottom:0;right:0;max-width:600px;max-height:200px;overflow:auto;background:#173c35;color:white;font:11px monospace;padding:8px;white-space:pre-wrap}.topbar{justify-content:flex-start}</style>
+<header class="topbar">QA · Análisis</header>
+<div id="analysis-root"></div>
+<output id="qa-status">Running…</output>
+<script src="../web/vendor/plotly.min.js"></script>
+<script src="../web/analysis.js"></script>
+<script>
+(async () => {
+  const checks = [], errors = [], saved = {};
+  const check = (name, condition) => { if (!condition) throw new Error(name); checks.push(name); };
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+  try {
+    check('Plotly bundled locally', !!window.Plotly);
+    const app = RDAnalysis.mount({root: '#analysis-root', openFiles: () => {}, saveImage: (name, data) => { saved.png = {name, data}; }, saveChart: (name, json) => { saved.html = {name, payload: JSON.parse(json)}; }, notify: error => errors.push(error)});
+    const names = ['entrevista.srt', 'notas.txt'];
+    const docs = await Promise.all(names.map(async (name, i) => ({id: String(i), name, text: await (await fetch('./fixtures/' + name)).text()})));
+    app.addDocuments(docs);
+    await wait(150);
+    check('Both files render', document.querySelectorAll('.analysis-file').length === 2);
+    check('Time and position remain separate', app.figures.size === 2);
+    check('Plot SVG is visible at chart dimensions', document.querySelector('.analysis-timeline .main-svg').getBoundingClientRect().width > 400);
+    check('Plot bars retain their fill', getComputedStyle(document.querySelector('.analysis-timeline .barlayer .point path')).fill !== 'none');
+    const keyword = document.querySelector('#analysis-keyword');
+    keyword.value = 'RÍO AZUL'; keyword.dispatchEvent(new Event('input', {bubbles: true}));
+    await wait(250);
+    check('Phrase search renders six matches', document.querySelectorAll('.analysis-result').length === 6);
+    check('Highlights rendered as text', document.querySelector('.analysis-result mark').textContent.toLowerCase().includes('río'));
+    document.querySelector('.analysis-result').click();
+    check('Match opens its full-text segment', !!document.querySelector('.analysis-text-document[open] .analysis-selected-segment'));
+    const figure = app.figures.get('time');
+    const oldRange = figure.element.layout.xaxis.range.slice();
+    app.navigate('zoom-in'); await wait(80);
+    check('Zoom changes range', figure.element.layout.xaxis.range[1] - figure.element.layout.xaxis.range[0] < oldRange[1] - oldRange[0]);
+    app.navigate('reset'); await wait(80);
+    document.documentElement.dataset.theme = 'dark'; app.setTheme('dark'); await wait(80);
+    check('Theme changes plot background', figure.element.layout.paper_bgcolor === getComputedStyle(document.documentElement).getPropertyValue('--panel').trim());
+    app.exportHtml();
+    check('HTML contains both figures', saved.html.payload.figures.length === 2);
+    await app.exportPng();
+    check('PNG is one combined image', saved.png.name === 'RD-linea-tiempo.png' && saved.png.data.startsWith('data:image/png;base64,') && saved.png.data.length > 10000);
+    const large = Array.from({length: 2470}, (_, i) => `${i + 1}\n${RDAnalysis.formatTime(i * 3, true)} --> ${RDAnalysis.formatTime(i * 3 + 2, true)}\nUn bosque con memoria.`).join('\n\n');
+    app.addDocuments([{id: 'large', name: '2470-segmentos.srt', text: large}]);
+    const data = document.querySelector('.analysis-data'); data.open = true; await wait(100);
+    check('Data rows are paginated', document.querySelectorAll('.analysis-table-wrap tbody tr').length === 200);
+    document.querySelector('[data-data-page="next"]').click();
+    check('Later data rows are reachable', app.dataPage === 1 && document.querySelector('.analysis-data-count').textContent.startsWith('201–400'));
+    app.addDocuments([{id: 'unsafe', name: 'x<img src=x>.txt', text: '<img src=x onerror="window.__pwned=1"> bosque'}]);
+    keyword.value = 'bosque'; keyword.dispatchEvent(new Event('input', {bubbles: true})); await wait(250);
+    check('Imported markup never executes', window.__pwned === undefined && !document.querySelector('.analysis-files img'));
+    check('No notifications report failures', errors.length === 0);
+    window.__ANALYSIS_QA_RESULT = {passed: checks.length, checks, errors};
+    document.title = 'PASS · Analysis browser QA';
+  } catch (error) {
+    window.__ANALYSIS_QA_RESULT = {passed: checks.length, checks, errors: [...errors, error.message], stack: error.stack};
+    document.title = 'FAIL · Analysis browser QA';
+  }
+  document.querySelector('#qa-status').textContent = JSON.stringify(window.__ANALYSIS_QA_RESULT, null, 2);
+})();
+</script>
+</html>

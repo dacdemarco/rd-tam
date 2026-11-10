@@ -1,0 +1,111 @@
+name: Build desktop bundles
+
+on:
+  workflow_dispatch:
+    inputs:
+      offline_models:
+        description: "Incluir los tres modelos en los archivos portátiles (descarga grande)"
+        type: boolean
+        default: false
+      release_tag:
+        description: "Etiqueta existente donde publicar los instaladores (vacío = no publicar)"
+        type: string
+        default: ""
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            name: windows-x64
+          - os: macos-15
+            name: macos-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Install browser dependencies
+        run: npm ci
+      - name: Build browser edition
+        run: npm run build
+      - name: Python tests
+        run: python -m pytest tests -q
+      - name: Analysis tests
+        run: npm test
+      - name: Build native application
+        run: python scripts/build.py
+      - name: Frozen self-test
+        shell: bash
+        run: python scripts/frozen_self_test.py
+      - name: Frozen smoke test (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: dist/RD-TAM/RD-TAM.exe --smoke-test --self-test-report build/smoke-test.json
+      - name: Frozen smoke test (macOS)
+        if: runner.os == 'macOS'
+        run: dist/RD-TAM.app/Contents/MacOS/RD-TAM --smoke-test --self-test-report build/smoke-test.json
+      - name: Upload verification reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ matrix.name }}
+          path: build/*-test.json
+          if-no-files-found: ignore
+      - name: Prepare offline portable models
+        if: ${{ inputs.offline_models }}
+        run: python scripts/download_models.py --data-dir build/offline-data
+      - name: Repackage offline application
+        if: ${{ inputs.offline_models }}
+        run: python scripts/build.py --skip-freeze --models-dir build/offline-data/models
+      - name: Upload distribution files
+        uses: actions/upload-artifact@v4
+        with:
+          name: RD-TAM-${{ matrix.name }}
+          path: |
+            dist/*-portable.zip
+            dist/*.dmg
+            dist/*-setup.exe
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    # Tag pushes publish the installers on a Release page so each computer downloads only its own file.
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
+    needs: desktop
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: RD-TAM-*
+          merge-multiple: true
+          path: out
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<'NOTES'
+          **Windows:** descarga el archivo que termina en `windows-x64-setup.exe` y ábrelo. Si Windows avisa "Windows protegió su PC", pulsa *Más información* → *Ejecutar de todas formas*.
+
+          **Mac (M1–M4):** descarga el archivo `.dmg`, ábrelo y arrastra RD-TAM a Aplicaciones. La primera vez, ve a Ajustes del Sistema → Privacidad y seguridad → *Abrir de todos modos*.
+
+          Los archivos `portable` son versiones sin instalación, solo por si el instalador da problemas.
+          NOTES
+          TAG="${{ inputs.release_tag || github.ref_name }}"
+          gh release create "$TAG" out/* --repo "$GITHUB_REPOSITORY" --verify-tag --title "RD-TAM $TAG" --notes-file notes.md
