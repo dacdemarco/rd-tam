@@ -57,7 +57,7 @@ if sys.platform == "darwin":
         info_plist={
             "CFBundleName": "RD-TAM",
             "CFBundleDisplayName": "RD-TAM",
-            "CFBundleShortVersionString": "0.2.1",
+            "CFBundleShortVersionString": "0.2.2",
             "NSHighResolutionCapable": True,
             "NSPrincipalClass": "NSApplication",
         },

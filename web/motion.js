@@ -209,7 +209,7 @@ function logoStage(canvas, logo, onFly, onDone) {
     if (t > FLY && !flying) { flying = true; onFly(); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    ctx.globalAlpha = 1 - clamp((t - FLY) / (GLIDE * .6));
+    ctx.globalAlpha = 1 - easeInOut(clamp((t - FLY) / (GLIDE * .9)));
     ctx.fillStyle = STAGE; ctx.fillRect(0, 0, W, H);
     ctx.globalAlpha = 1;
     if (t < DRAWN) {
@@ -274,6 +274,8 @@ export function boot() {
       document.querySelector('.splash')?.remove();
       Promise.allSettled([...running].map(animation => animation.finished)).then(() => finish(false));
     });
+    // The canvas paints the stage from its first frame; the splash's own black would hide the fade.
+    splash.style.background = 'none';
   }).catch(error => {
     console.error(error);
     finish(true);

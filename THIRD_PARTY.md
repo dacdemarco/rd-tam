@@ -14,8 +14,6 @@ RD-TAM usa los siguientes proyectos. Las marcas y los logos RD proporcionados po
 | pixelarticons 2.4.2 | Iconos pixel de la interfaz (adaptados a mano a la rejilla de 24) | [pixelarticons, MIT](https://github.com/halfmage/pixelarticons); aviso completo al final de este archivo |
 | psutil | Pausa, reanudación y cancelación de procesos | [psutil, BSD 3-Clause](https://github.com/giampaolo/psutil/blob/master/LICENSE) |
 | PyInstaller | Generación de paquetes de escritorio | [Licencia y excepción de distribución](https://pyinstaller.org/en/stable/license.html) |
-| Transformers.js / ONNX Runtime Web | Inferencia Whisper en el navegador | [Transformers.js, Apache 2.0](https://github.com/huggingface/transformers.js/blob/main/LICENSE), [ONNX Runtime, MIT](https://github.com/microsoft/onnxruntime/blob/main/LICENSE) |
-| ffmpeg.wasm | Decodificación adicional en el navegador | [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm/blob/main/LICENSE), [licencias de los núcleos y códecs](https://ffmpegwasm.netlify.app/docs/overview/) |
 
 La construcción recopila los avisos de licencia incluidos en las distribuciones de Python instaladas y los coloca en `_internal/licenses` (o dentro del paquete de macOS), con un inventario de versiones. Los paquetes Qt/Chromium y los códecs pueden incluir avisos adicionales dentro de sus recursos. La colección automática no sustituye la revisión de las obligaciones aplicables antes de distribuir públicamente una versión firmada.
 

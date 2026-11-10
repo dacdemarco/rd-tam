@@ -68,6 +68,7 @@ function activateTab(name) {
   assemble($('#'+name+'-panel'), {pace:.6});
   if (name === 'analysis') requestAnimationFrame(() => analysis.resize());
 }
+if (document.documentElement.classList.contains('web')) activateTab('analysis');
 tabNames.forEach((name,index) => {
   const tab = $('#tab-'+name);
   tab.onclick = () => activateTab(name);

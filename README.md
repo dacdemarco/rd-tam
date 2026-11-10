@@ -4,24 +4,17 @@ Aplicación de escritorio para transcribir audio y video localmente con Whisper 
 
 ## Versión para navegador
 
-La edición web está pensada para versiones recientes de Chrome, Edge y Safari. Procesa los archivos dentro del navegador con Whisper y WebAssembly; no necesita una clave de API ni sube el material a un servidor. Su compatibilidad debe verificarse en cada navegador antes de distribuir una versión definitiva. El rendimiento depende de la memoria y CPU del dispositivo.
+La edición web contiene solo la herramienta de **Análisis**: abre archivos TXT/SRT, busca palabras en contexto y exporta las gráficas. Funciona en Safari (también en iPad), Chrome y Edge recientes, en https://dacdemarco.github.io/rd-tam/. La transcripción está solo en la aplicación de escritorio: en un navegador sería mucho más lenta y Safari la detiene si la pantalla se apaga. Los archivos se leen dentro del navegador y no se suben a ningún servidor.
 
-El archivo `release/RD-TAM-navegador.zip` contiene una web estática. Para compartirla mediante un enlace, extrae su contenido completo en un alojamiento estático HTTPS. Para usar el paquete local, sirve la carpeta por HTTP en `localhost`: con Python 3 instalado puedes ejecutar `Iniciar.py` o, en Windows, `Iniciar-Windows.cmd`. **Abrir `index.html` con doble clic no sirve** para cargar los motores WebAssembly. Un enlace compartido de Drive/Dropbox que solo descarga archivos tampoco reemplaza un alojamiento web.
-
-Los modelos web se descargan al usarlos por primera vez y el navegador puede guardarlos en su caché. La caché puede borrarse o ser expulsada por el navegador, así que no garantiza uso permanente sin conexión. Los modelos web y los modelos de escritorio usan formatos diferentes. El navegador admite archivos de hasta 512 MB y el límite práctico puede ser menor por la memoria necesaria para decodificar y transcribir; para grabaciones extensas, usa la edición de escritorio. Los formatos nativos se decodifican con Web Audio y los demás se intentan con FFmpeg incluido en la distribución.
-
-Construcción de la web con Node.js y las dependencias del proyecto:
+Cada cambio en `main` vuelve a publicar la página (`.github/workflows/pages.yml`). Para construirla y abrirla en el equipo:
 
 ```sh
 npm ci
 npm run build
-python scripts/package_web.py
 python scripts/launch_browser.py
 ```
 
-La salida estática queda en `dist/browser`; el último comando abre esa copia en el navegador con un servidor accesible únicamente desde el equipo local. El código de los lanzadores no recibe ni guarda el contenido de los archivos de audio/video.
-
-El ZIP web también incluye **Iniciar.exe** para Windows: extrae la carpeta completa y ábrelo para usar el navegador sin instalar Python. Cierra su ventana de consola para detener el servidor. En macOS usa un alojamiento HTTPS o el lanzador Python incluido.
+La salida estática queda en `dist/browser`; el último comando la abre con un servidor accesible solo desde el equipo local. `python scripts/package_web.py` la empaqueta en `release/RD-TAM-navegador.zip` para servirla desde otro alojamiento HTTPS. **Abrir `index.html` con doble clic no sirve.**
 
 ## Distribución de escritorio
 
@@ -126,7 +119,7 @@ python main.py --self-test
 python main.py --smoke-test
 ```
 
-Las pruebas opcionales de integración están en `scripts/test-browser.mjs` y `scripts/test_transcription.py`; requieren respectivamente Playwright/Edge y un modelo tiny local con los archivos de prueba indicados por el script. `python main.py --self-test` comprueba las bibliotecas y `python main.py --smoke-test` abre y verifica la ventana. El ejecutable compilado admite los mismos argumentos. `RD-TAM.exe --browser` abre la versión web incluida sin requerir Python o Node en el equipo receptor.
+Las pruebas opcionales de integración están en `scripts/test-browser.mjs` y `scripts/test_transcription.py`; requieren respectivamente Playwright/Edge y un modelo tiny local con los archivos de prueba indicados por el script. `python main.py --self-test` comprueba las bibliotecas y `python main.py --smoke-test` abre y verifica la ventana. El ejecutable compilado admite los mismos argumentos. `RD-TAM.exe --browser` abre la herramienta de análisis web incluida sin requerir Python o Node en el equipo receptor.
 
 Además de las pruebas automatizadas, cada distribución debe abrirse y probarse con audio real en su plataforma antes de publicarse. Compilar correctamente no verifica por sí solo los permisos, las ventanas de archivos, la carga del motor o la reproducción del diseño en otra plataforma.
 

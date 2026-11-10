@@ -60,7 +60,7 @@ def main() -> None:
     machine = platform.machine().lower()
     arch = "arm64" if machine in {"arm64", "aarch64"} else "x64" if machine in {"amd64", "x86_64"} else machine
     system = {"win32": "windows", "darwin": "macos"}.get(sys.platform, "linux")
-    stem = f"RD-TAM-0.2.1-{system}-{arch}"
+    stem = f"RD-TAM-0.2.2-{system}-{arch}"
     if sys.platform == "darwin":
         stage = ROOT / "build" / "packages" / uuid.uuid4().hex
         portable = stage / "RD-TAM"
@@ -82,7 +82,7 @@ def main() -> None:
             shutil.make_archive(str(DIST / f"{stem}-portable"), "zip", root_dir=DIST, base_dir="RD-TAM")
             compiler = inno_compiler(args.iscc)
             if compiler:
-                run(compiler, f"/DAppVersion=0.2.1", f"/DOutputName={stem}-setup", ROOT / "packaging" / "windows.iss")
+                run(compiler, f"/DAppVersion=0.2.2", f"/DOutputName={stem}-setup", ROOT / "packaging" / "windows.iss")
     print(f"Archivos generados en {DIST}")
 
 

@@ -243,5 +243,5 @@ def run():
     app.setApplicationName('RD-TAM')
     app.setWindowIcon(QIcon(str(ROOT / 'assets/icon.png')))
     window = Window()
-    window.show()
+    window.showMaximized()
     sys.exit(app.exec())

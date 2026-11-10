@@ -8,29 +8,20 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "dist" / "browser"
 DESTINATION = ROOT / "release" / "RD-TAM-navegador.zip"
 
-HELP = """RD-TAM — Transcripción y Análisis Multimedia
+HELP = """RD-TAM — Análisis de transcripciones
 Versión para navegador
 
+Esta edición contiene solo la herramienta de Análisis: abre archivos TXT/SRT,
+busca palabras en contexto y exporta gráficas. Los archivos se leen dentro del
+navegador y no se suben a ningún servidor.
+
 La carpeta completa se puede servir desde cualquier alojamiento estático HTTPS.
-No abras index.html con doble clic: los motores necesitan HTTP(S).
+No abras index.html con doble clic: necesita HTTP(S).
 
 Para abrirla localmente:
   Windows: abrir Iniciar.exe (si viene incluido; no necesita Python).
   Windows con Python 3: abrir Iniciar-Windows.cmd
-  macOS/Linux: ejecutar python3 Iniciar.py
-
-También puedes usar el lanzador nativo de RD-TAM con --browser cuando su
-distribución incluya la versión web.
-
-Los archivos se procesan dentro del navegador. Los modelos se descargan al
-usarlos por primera vez. No se suben audios o videos ni se necesita una API key.
-El navegador puede eliminar su caché; la caché no garantiza disponibilidad
-permanente sin conexión. Los modelos del escritorio son distintos.
-
-Compatibilidad prevista: navegadores recientes Safari, Chrome, Opera y Firefox.
-Verifica la versión que vayas a distribuir. Archivos de hasta 512 MB; el límite
-efectivo depende de la memoria y duración del audio. Para material muy largo,
-usa la aplicación de escritorio.
+  macOS: ejecutar python3 Iniciar.py
 """
 
 WINDOWS_LAUNCHER = """@echo off
