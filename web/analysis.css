@@ -134,7 +134,8 @@
 .analysis-section-label::after{content:'';flex:1;height:2px;background:var(--action);order:1}
 .analysis-section-label>span{margin-left:0;order:2;color:var(--data)}
 .analysis-heading h1{text-shadow:var(--chroma)}
-.analysis-layout{height:calc(100vh - var(--header-height) - 4px);letter-spacing:.06em}
+.analysis-layout{letter-spacing:.06em}
+@media(min-width:721px){.analysis-layout{height:calc(100vh - var(--header-height) - 4px)}}
 .analysis-card{border-color:var(--control)}
 .analysis-open{text-transform:uppercase;letter-spacing:.08em;text-shadow:none}
 .analysis-result-context mark{text-shadow:none}
