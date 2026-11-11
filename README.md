@@ -1,12 +1,12 @@
 # RD-TAM — Transcripción y Análisis Multimedia
 
-Aplicación de escritorio para transcribir audio y video localmente con Whisper y explorar textos mediante palabras clave en contexto (KWIC). La interfaz tiene las pestañas **Transcribir** y **Análisis**, temas claro/oscuro y la identidad RD.
+Aplicación de escritorio para transcribir audio y video en el propio equipo con Whisper y para buscar palabras clave en contexto (KWIC) dentro de textos. Tiene dos pestañas: **Transcribir** y **Análisis**.
 
 ## Versión para navegador
 
-La edición web contiene solo la herramienta de **Análisis**: abre archivos TXT/SRT, busca palabras en contexto y exporta las gráficas. Funciona en Safari (también en iPad), Chrome y Edge recientes, en https://dacdemarco.github.io/rd-tam/. La transcripción está solo en la aplicación de escritorio: en un navegador sería mucho más lenta y Safari la detiene si la pantalla se apaga. Los archivos se leen dentro del navegador y no se suben a ningún servidor.
+La edición web solo incluye **Análisis**: abre archivos TXT/SRT, busca palabras en contexto y exporta las gráficas. Funciona en Safari (también en iPad), Chrome y Edge recientes, en https://dacdemarco.github.io/rd-tam/. La transcripción solo existe en la aplicación de escritorio, porque en un navegador sería mucho más lenta y Safari la detiene cuando la pantalla se apaga. Los archivos se leen en el navegador y no se suben a ningún servidor.
 
-Cada cambio en `main` vuelve a publicar la página (`.github/workflows/pages.yml`). Para construirla y abrirla en el equipo:
+Cada cambio en `main` vuelve a publicar la página (`.github/workflows/pages.yml`). Para construirla y abrirla en local:
 
 ```sh
 npm ci
@@ -14,18 +14,18 @@ npm run build
 python scripts/launch_browser.py
 ```
 
-La salida estática queda en `dist/browser`; el último comando la abre con un servidor accesible solo desde el equipo local. `python scripts/package_web.py` la empaqueta en `release/RD-TAM-navegador.zip` para servirla desde otro alojamiento HTTPS. **Abrir `index.html` con doble clic no sirve.**
+La salida queda en `dist/browser`, y el último comando la abre con un servidor local. Abrir `index.html` con doble clic no funciona.
 
 ## Distribución de escritorio
 
-Cada sistema necesita su propio binario. Una carpeta de Windows no funciona en macOS. Los modelos descargados sí se pueden compartir entre las versiones de escritorio.
+Cada sistema necesita su propio binario: una carpeta de Windows no funciona en macOS. Los modelos descargados sí se pueden compartir entre sistemas.
 
 | Sistema | Paquete portátil | Instalación |
 | --- | --- | --- |
 | Windows x64 | Descomprimir el ZIP y abrir `RD-TAM.exe` dentro de la carpeta completa. | Ejecutar el archivo `*-setup.exe`, cuando se haya generado con Inno Setup. |
 | macOS Apple Silicon | Descomprimir el ZIP correspondiente y abrir `RD-TAM.app`. | Abrir el DMG y arrastrar la aplicación a Aplicaciones. |
 
-El código y las recetas de construcción son multiplataforma. Los binarios solo se pueden considerar verificados en los sistemas donde se hayan construido y probado. Este repositorio no incluye certificados de firma de Windows ni notarización de Apple; los sistemas pueden mostrar sus avisos de aplicación no reconocida.
+El código y los scripts de construcción son multiplataforma, pero un binario solo está verificado en el sistema donde se construyó y probó. Los paquetes no están firmados (Windows) ni notarizados (Apple), así que el sistema puede avisar de que la aplicación no es reconocida.
 
 ### USB y uso sin conexión
 
@@ -38,10 +38,6 @@ python scripts/download_models.py --data-dir dist/RD-TAM/data
 ```
 
 Para macOS, indica como `--data-dir` la carpeta `data` que esté junto a la aplicación portátil. Los pesos pueden ocupar varios GB; la descarga inicial y su velocidad dependen de la conexión. No es necesario incluir los tres modelos: se puede añadir `--models tiny` o `--models tiny small`.
-
-## Interfaz
-
-Tiene dos temas. El de día, «Oficina», usa papel beige, tinta azul marino y azul pastel. El de noche, «Terminal», usa ámbar sobre negro con datos en cian. Todo el texto va en Departure Mono, una fuente de píxel. Los iconos están dibujados en una rejilla de 24 píxeles. Al abrir, un trazo de luz dibuja el logo, que se desliza a su lugar, y cada casilla se ensambla con líneas y bandas; un clic o una tecla lo saltan. Toda la ventana lleva grano de película. Las animaciones siempre están activas, aunque el sistema pida reducir el movimiento. El detalle está en `docs/design-reference.txt`; el muestrario de desarrollo, en `web/specimen.html`.
 
 ## Uso
 
@@ -80,7 +76,7 @@ python3.11 -m venv .venv
 .venv/bin/python main.py
 ```
 
-Los recursos gráficos y Plotly se cargan desde `assets/` y `web/vendor/`; no se requiere CDN para el escritorio. Si se están regenerando los recursos, usa `scripts/prepare_assets.py` con los archivos de marca disponibles.
+Plotly y los recursos se cargan desde `assets/` y `web/vendor/`, así que la versión de escritorio no necesita conexión a un CDN.
 
 ## Construir instaladores y archivos portátiles
 
@@ -109,11 +105,8 @@ El ZIP portátil de Windows incluye el modelo **Rápido** (`tiny`). Los modelos 
 CI construye y prueba la aplicación en Windows x64 y macOS Apple Silicon. Comprobaciones:
 
 ```sh
-python -m pytest tests -q              # motor, contrato de interfaz, exportaciones
+python -m pytest tests -q              # motor, interfaz y exportaciones
 npm test                               # análisis KWIC
-node scripts/check-contrast.mjs        # contraste AA de los dos temas
-node scripts/check-logo.mjs            # logo vectorial fiel al original
-node scripts/test-design.mjs           # diseño, iconos, movimiento y foco por teclado
 node scripts/test-browser.mjs --browser=edge   # edición web construida
 python main.py --self-test
 python main.py --smoke-test
@@ -121,10 +114,6 @@ python main.py --smoke-test
 
 Las pruebas opcionales de integración están en `scripts/test-browser.mjs` y `scripts/test_transcription.py`; requieren respectivamente Playwright/Edge y un modelo tiny local con los archivos de prueba indicados por el script. `python main.py --self-test` comprueba las bibliotecas y `python main.py --smoke-test` abre y verifica la ventana. El ejecutable compilado admite los mismos argumentos. `RD-TAM.exe --browser` abre la herramienta de análisis web incluida sin requerir Python o Node en el equipo receptor.
 
-Además de las pruebas automatizadas, cada distribución debe abrirse y probarse con audio real en su plataforma antes de publicarse. Compilar correctamente no verifica por sí solo los permisos, las ventanas de archivos, la carga del motor o la reproducción del diseño en otra plataforma.
+Antes de publicar una distribución, ábrela y pruébala con audio real en su plataforma. Que compile no demuestra que funcionen los permisos, los diálogos de archivos ni la carga del motor.
 
-## Nombre
-
-El nombre oficial es **RD-TAM — Transcripción y Análisis Multimedia**. RD-TAM se usa en los paquetes y accesos directos; la interfaz muestra el logo RD.
-
-Consulta [THIRD_PARTY.md](THIRD_PARTY.md) para las fuentes y avisos de componentes.
+Los componentes de terceros y sus licencias están en [THIRD_PARTY.md](THIRD_PARTY.md).

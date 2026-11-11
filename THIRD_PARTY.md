@@ -1,6 +1,6 @@
 # Componentes y referencias
 
-RD-TAM usa los siguientes proyectos. Las marcas y los logos RD proporcionados por el titular conservan sus derechos. Este archivo no asigna una licencia al código propio de RD-TAM.
+RD-TAM usa los siguientes proyectos. Este archivo no asigna una licencia al código propio de RD-TAM.
 
 | Componente | Uso | Fuente y licencia |
 | --- | --- | --- |
@@ -10,16 +10,14 @@ RD-TAM usa los siguientes proyectos. Las marcas y los logos RD proporcionados po
 | PySide6 / Qt | Ventana, puente local y Qt WebEngine | [Qt for Python licensing](https://doc.qt.io/qtforpython-6/licenses.html) |
 | PyAV / FFmpeg | Decodificación de audio y video | [PyAV](https://github.com/PyAV-Org/PyAV/blob/main/LICENSE.txt), [FFmpeg licensing](https://ffmpeg.org/legal.html) |
 | Plotly.js | Gráficas interactivas y exportación | [Plotly, MIT](https://github.com/plotly/plotly.js/blob/master/LICENSE) |
-| Departure Mono 1.500 | Tipografía de etiquetas, tiempos y títulos (11/22 px) | [Departure Mono, SIL OFL 1.1](https://github.com/rektdeckard/departure-mono); licencia en `licenses/fonts/DepartureMono-OFL.txt` |
-| pixelarticons 2.4.2 | Iconos pixel de la interfaz (adaptados a mano a la rejilla de 24) | [pixelarticons, MIT](https://github.com/halfmage/pixelarticons); aviso completo al final de este archivo |
+| Departure Mono 1.500 | Fuente de la interfaz | [Departure Mono, SIL OFL 1.1](https://github.com/rektdeckard/departure-mono); licencia en `licenses/fonts/DepartureMono-OFL.txt` |
+| pixelarticons 2.4.2 | Iconos de la interfaz | [pixelarticons, MIT](https://github.com/halfmage/pixelarticons); aviso completo al final de este archivo |
 | psutil | Pausa, reanudación y cancelación de procesos | [psutil, BSD 3-Clause](https://github.com/giampaolo/psutil/blob/master/LICENSE) |
 | PyInstaller | Generación de paquetes de escritorio | [Licencia y excepción de distribución](https://pyinstaller.org/en/stable/license.html) |
 
-La construcción recopila los avisos de licencia incluidos en las distribuciones de Python instaladas y los coloca en `_internal/licenses` (o dentro del paquete de macOS), con un inventario de versiones. Los paquetes Qt/Chromium y los códecs pueden incluir avisos adicionales dentro de sus recursos. La colección automática no sustituye la revisión de las obligaciones aplicables antes de distribuir públicamente una versión firmada.
+La construcción copia los avisos de licencia de las distribuciones de Python instaladas a `_internal/licenses` (o al paquete de macOS), junto con un inventario de versiones. Qt/Chromium y los códecs pueden traer avisos adicionales en sus propios recursos. Esa copia automática no sustituye revisar las obligaciones de licencia antes de distribuir una versión públicamente.
 
-El análisis KWIC se implementa específicamente para esta herramienta: se usa como referencia conceptual [mattbriggs/KWIC](https://github.com/mattbriggs/KWIC) y como referencia funcional unas capturas de pantalla. No se incorpora el código de ese repositorio.
-
-El estilo es papel y tinta, terminal y fósforo: superficies planas, reglas de 1px, toda la interfaz en Departure Mono, grano de película y líneas de vector. Referencias de tono (sin recursos incorporados): la oficina Lumon de *Severance* para el día y la terminal CRT de *Alien: Isolation* para la noche. La composición se documenta en `docs/design-reference.txt`.
+El análisis KWIC está escrito para esta herramienta. [mattbriggs/KWIC](https://github.com/mattbriggs/KWIC) sirvió de referencia conceptual, pero no se incorpora su código.
 
 ## Aviso MIT de pixelarticons
 
